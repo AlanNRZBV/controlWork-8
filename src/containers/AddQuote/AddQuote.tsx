@@ -44,6 +44,7 @@ const AddQuote: FC<IAddQuote> = ({ loadToggle, editId }) => {
 
   const selectHandler = (selected: IOptions | null) => {
     if (selected?.value) {
+      setSelectedOption(selected)
       setInputData((prevState) => ({ ...prevState, category: selected.value }));
     }
   };

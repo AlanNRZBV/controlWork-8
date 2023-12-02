@@ -1,5 +1,5 @@
 import { Col, Container, Nav, Navbar, Row, Spinner } from 'react-bootstrap';
-import { Route, Routes, NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, Route, Routes, useNavigate } from 'react-router-dom';
 import Quotes from '../Quotes/Quotes.tsx';
 import AddQuote from '../AddQuote/AddQuote.tsx';
 import { useEffect, useState } from 'react';
@@ -12,27 +12,22 @@ function App() {
   const [quotes, setQuotes] = useState<IQuote[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [editId, setEditId] = useState<string>('');
-  const [isEmpty, setIsEmpty] = useState(false);
   const [toggleSpinner, setToggleSpinner] = useState(false);
   const [toggleCategories, setToggleCategories] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
     setToggleSpinner(true);
-    setIsEmpty(false);
     if (!isLoaded) {
       axiosApi
         .get('/quotes.json')
         .then((response) => {
           if (response.data !== null) {
-            setIsEmpty((prevState) => !prevState);
             const newQuotes = Object.keys(response.data).map((id) => ({
               id,
               ...response.data[id],
             }));
             setToggleCategories((prevState) => !prevState);
             setQuotes(newQuotes);
-          } else {
-            setIsEmpty(true);
           }
           setToggleSpinner(false);
         })
@@ -138,14 +133,14 @@ function App() {
                 </Spinner>
               ) : (
                 <Routes>
-                  <Route path="/" element={<Quotes quotes={quotes} onDelete={deleteQuote} onEdit={editQuote} isEmpty={isEmpty}/>} />
+                  <Route path="/" element={<Quotes quotes={quotes} onDelete={deleteQuote} onEdit={editQuote} />} />
                   <Route
                     path="/quotes"
-                    element={<Quotes quotes={quotes} onDelete={deleteQuote} onEdit={editQuote} isEmpty={isEmpty}/>}
+                    element={<Quotes quotes={quotes} onDelete={deleteQuote} onEdit={editQuote} />}
                   />
                   <Route
                     path="/quotes/:id"
-                    element={<Quotes quotes={quotes} onDelete={deleteQuote} onEdit={editQuote} isEmpty={isEmpty}/>}
+                    element={<Quotes quotes={quotes} onDelete={deleteQuote} onEdit={editQuote} />}
                   />
                   <Route path="/add-quote" element={<AddQuote loadToggle={toggleIsLoaded} editId={editId} />} />
                   <Route path="/quotes/:id/edit" element={<AddQuote loadToggle={toggleIsLoaded} editId={editId} />} />

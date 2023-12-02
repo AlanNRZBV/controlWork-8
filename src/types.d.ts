@@ -13,7 +13,6 @@ export interface IQuotes {
   quotes: IQuote[];
   onDelete: (key: string) => void;
   onEdit?: (key: string) => void;
-  isEmpty: boolean
 }
 
 export interface IAddQuote {
