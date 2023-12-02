@@ -1,9 +1,13 @@
-import React from "react";
+import { FC } from "react";
+import { IQuotes } from "../../types";
+import Quote from "../../components/Quote/Quote.tsx";
 
-const Quotes = () => {
+const Quotes: FC<IQuotes> = ({quotes}) => {
   return (
-    <div>
-      quotes here
+    <div className="">
+      {quotes.map((item)=>(
+        <Quote author={item.author} text={item.text} key={item.id}/>
+      ))}
     </div>
   );
 };

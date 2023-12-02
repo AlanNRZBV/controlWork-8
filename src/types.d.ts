@@ -1,15 +1,21 @@
 import React from "react";
 
 export interface IQuote {
-  category: string,
+  id?:string
+  category?: string,
   author: string,
   text: string
+}
+
+export interface IQuotes {
+  quotes: IQuote[]
 }
 
 export interface IOptions {
   value: string,
   label: string
 }
+
 
 export interface IQuoteForm {
   options: IOptions[]
