@@ -7,54 +7,63 @@ import { IQuote } from '../../types';
 import axiosApi from '../../axiosApi.ts';
 import Categories from '../../components/Categories/Categories.tsx';
 import { options } from '../../constants/constants.ts';
-import { Simulate } from 'react-dom/test-utils';
 
 function App() {
   const [quotes, setQuotes] = useState<IQuote[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [editId, setEditId] = useState<string>('');
-  const [toggleSpinner, setToggleSpinner]=useState(false)
-  const [toggleCategories, setToggleCategories]=useState(false)
+  const [isEmpty, setIsEmpty] = useState(false);
+  const [toggleSpinner, setToggleSpinner] = useState(false);
+  const [toggleCategories, setToggleCategories] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
-    setToggleSpinner(true)
+    setToggleSpinner(true);
+    setIsEmpty(false);
     if (!isLoaded) {
-      axiosApi.get('/quotes.json')
+      axiosApi
+        .get('/quotes.json')
         .then((response) => {
-        if (response.data !== null) {
-          const newQuotes = Object.keys(response.data).map((id) => ({
-            id,
-            ...response.data[id],
-          }));
-          setToggleCategories(prevState => !prevState)
-          setToggleSpinner(false)
-          setQuotes(newQuotes);
-        }
-      }).catch((error)=>{
-        setToggleSpinner(false)
-        console.log('Caught while fetching data: ' + error)
-      });
+          if (response.data !== null) {
+            setIsEmpty((prevState) => !prevState);
+            const newQuotes = Object.keys(response.data).map((id) => ({
+              id,
+              ...response.data[id],
+            }));
+            setToggleCategories((prevState) => !prevState);
+            setQuotes(newQuotes);
+          } else {
+            setIsEmpty(true);
+          }
+          setToggleSpinner(false);
+        })
+        .catch((error) => {
+          setToggleSpinner(false);
+          console.log('Caught while fetching data: ' + error);
+        });
     }
     setIsLoaded(true);
   }, [isLoaded]);
   const filterCategory = async (category?: string, isAll?: boolean) => {
-    setToggleSpinner(true)
+    setToggleSpinner(true);
     if (!isAll) {
       setQuotes([]);
       const url = `/quotes.json?orderBy="category"&equalTo="${category}"`;
-      await axiosApi.get(url).then((response) => {
-        if (response.data !== null) {
-          const newQuotes = Object.keys(response.data).map((id) => ({
-            id,
-            ...response.data[id],
-          }));
-          setQuotes(newQuotes);
-          setToggleSpinner(false)
-        }
-      }).catch((error)=>{
-        setToggleSpinner(false)
-        console.log('Caught after quote delete: ' + error)
-      });
+      await axiosApi
+        .get(url)
+        .then((response) => {
+          if (response.data !== null) {
+            const newQuotes = Object.keys(response.data).map((id) => ({
+              id,
+              ...response.data[id],
+            }));
+            setQuotes(newQuotes);
+            setToggleSpinner(false);
+          }
+        })
+        .catch((error) => {
+          setToggleSpinner(false);
+          console.log('Caught after quote delete: ' + error);
+        });
     } else {
       if (isLoaded) {
         setIsLoaded((prevState) => !prevState);
@@ -76,7 +85,7 @@ function App() {
         const newQuotes = [...prevState];
         return newQuotes.filter((post) => post.id !== key);
       });
-      setToggleCategories(false)
+      setToggleCategories(false);
       navigate('/');
     } catch (error) {
       console.log(`Deleting quote with id:${id} cause and error:${error}`);
@@ -84,12 +93,12 @@ function App() {
   };
 
   const editQuote = (key: string) => {
-    setToggleCategories(prevState => !prevState)
+    setToggleCategories((prevState) => !prevState);
     setEditId(key);
   };
-  const toggleCategoriesHandler = ()=>{
-    setToggleCategories(prevState => !prevState)
-  }
+  const toggleCategoriesHandler = () => {
+    setToggleCategories((prevState) => !prevState);
+  };
 
   return (
     <>
@@ -114,33 +123,34 @@ function App() {
       <main>
         <Container>
           <Row className="pt-3">
-            {toggleCategories ? (<></>)
-              :
-              (
-                <Col className="h-100">
-                  <Categories onFilter={filterCategory} categories={options} />
-                </Col>
-              )}
+            {toggleCategories ? (
+              <></>
+            ) : (
+              <Col className="h-100">
+                <Categories onFilter={filterCategory} categories={options} />
+              </Col>
+            )}
 
             <Col>
-              {toggleSpinner? (
+              {toggleSpinner ? (
                 <Spinner animation="border" role="status">
-                <span className="visually-hidden">Loading...</span>
+                  <span className="visually-hidden">Loading...</span>
                 </Spinner>
-                )
-                :
-                (
-                  <Routes>
-                    <Route path="/" element={<Quotes quotes={quotes} onDelete={deleteQuote} onEdit={editQuote} />} />
-                    <Route path="/quotes" element={<Quotes quotes={quotes} onDelete={deleteQuote} onEdit={editQuote} />} />
-                    <Route
-                      path="/quotes/:id"
-                      element={<Quotes quotes={quotes} onDelete={deleteQuote} onEdit={editQuote} />}
-                    />
-                    <Route path="/add-quote" element={<AddQuote loadToggle={toggleIsLoaded} editId={editId} />} />
-                    <Route path="/quotes/:id/edit" element={<AddQuote loadToggle={toggleIsLoaded} editId={editId} />} />
-                  </Routes>
-                )}
+              ) : (
+                <Routes>
+                  <Route path="/" element={<Quotes quotes={quotes} onDelete={deleteQuote} onEdit={editQuote} isEmpty={isEmpty}/>} />
+                  <Route
+                    path="/quotes"
+                    element={<Quotes quotes={quotes} onDelete={deleteQuote} onEdit={editQuote} isEmpty={isEmpty}/>}
+                  />
+                  <Route
+                    path="/quotes/:id"
+                    element={<Quotes quotes={quotes} onDelete={deleteQuote} onEdit={editQuote} isEmpty={isEmpty}/>}
+                  />
+                  <Route path="/add-quote" element={<AddQuote loadToggle={toggleIsLoaded} editId={editId} />} />
+                  <Route path="/quotes/:id/edit" element={<AddQuote loadToggle={toggleIsLoaded} editId={editId} />} />
+                </Routes>
+              )}
             </Col>
           </Row>
         </Container>
