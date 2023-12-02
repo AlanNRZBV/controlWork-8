@@ -9,13 +9,13 @@ const Quote: FC<IQuote> = ({ author, text, onDelete, id, onEdit }) => {
     }
   };
   const editHandler = () => {
-    if (id && onEdit){
-      onEdit(id)
+    if (id && onEdit) {
+      onEdit(id);
     }
   };
 
   return (
-    <div className="mb-3 border border-1 rounded-3 py-3 px-3 d-flex">
+    <div className="mb-3 border border-1 rounded-3 py-3 px-3 d-flex shadow-sm">
       <div className="d-flex flex-column me-auto">
         <p className="border-bottom border-1 pb-3">{text}</p>
         <span className="text-secondary fst-italic">{author}</span>

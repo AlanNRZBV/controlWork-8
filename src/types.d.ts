@@ -25,11 +25,23 @@ export interface IOptions {
   label: string;
 }
 
+export interface ICategories {
+  onFilter: (categories: string | undefined, isAll?: boolean) => void;
+  categories: IOptions[];
+}
+
+export interface ICategoriesLink {
+  onFilter?: (categories: string | undefined, isAll?: boolean | undefined) => void;
+  label?: string;
+  urlId?: string;
+  isAll?: boolean;
+}
+
 export interface IQuoteForm {
   options: IOptions[];
   inputData: IQuote;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   onSelect: (selected: IOptions | null) => void;
-  selected: IOptions | null
+  selected: IOptions | null;
 }
