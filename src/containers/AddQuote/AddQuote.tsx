@@ -32,6 +32,7 @@ const AddQuote: FC<IAddQuote> = ({ loadToggle, editId }) => {
         });
       };
       void fetchSinglePost();
+
     }
   }, [editId]);
 

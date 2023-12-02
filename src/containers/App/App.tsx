@@ -60,6 +60,7 @@ function App() {
           console.log('Caught after quote delete: ' + error);
         });
     } else {
+      setToggleCategories(prevState => !prevState)
       if (isLoaded) {
         setIsLoaded((prevState) => !prevState);
       }
