@@ -1,20 +1,19 @@
-import { Container, Nav, Navbar } from "react-bootstrap";
-import { Route, Routes, NavLink, useNavigate } from "react-router-dom";
-import Quotes from "../Quotes/Quotes.tsx";
-import AddQuote from "../AddQuote/AddQuote.tsx";
-import { useEffect, useState } from "react";
-import { IQuote } from "../../types";
-import axiosApi from "../../axiosApi.ts";
+import { Container, Nav, Navbar } from 'react-bootstrap';
+import { Route, Routes, NavLink, useNavigate } from 'react-router-dom';
+import Quotes from '../Quotes/Quotes.tsx';
+import AddQuote from '../AddQuote/AddQuote.tsx';
+import { useEffect, useState } from 'react';
+import { IQuote } from '../../types';
+import axiosApi from '../../axiosApi.ts';
 
 function App() {
-
-  const [quotes,setQuotes]=useState<IQuote[]>([])
+  const [quotes, setQuotes] = useState<IQuote[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
-  const navigate = useNavigate()
-
+  const [editId, setEditId] = useState<string>('');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if(!isLoaded){
+    if (!isLoaded) {
       axiosApi.get('/quotes.json').then((response) => {
         if (response.data !== null) {
           const newQuotes = Object.keys(response.data).map((id) => ({ id, ...response.data[id] }));
@@ -31,7 +30,7 @@ function App() {
     }
   };
 
-  const deleteQuote = async (key: string)=>{
+  const deleteQuote = async (key: string) => {
     const id = `/quotes/${key}.json`;
     try {
       await axiosApi.delete(id);
@@ -43,8 +42,11 @@ function App() {
     } catch (error) {
       console.log(`Deleting quote with id:${id} cause and error:${error}`);
     }
-  }
+  };
 
+  const editQuote = (key: string) => {
+    setEditId(key);
+  };
 
   return (
     <>
@@ -69,14 +71,16 @@ function App() {
       <main>
         <Container>
           <Routes>
-            <Route path="/" element={<Quotes quotes={quotes} onDelete={deleteQuote}/>}/>
-            <Route path="/quotes" element={<Quotes quotes={quotes} onDelete={deleteQuote}/>}/>
-            <Route path="/add-quote" element={<AddQuote loadToggle={toggleIsLoaded}/>}/>
+            <Route path="/" element={<Quotes quotes={quotes} onDelete={deleteQuote} onEdit={editQuote}/>} />
+            <Route path="/quotes" element={<Quotes quotes={quotes} onDelete={deleteQuote} onEdit={editQuote} />} />
+            <Route path="/quotes/:id" element={<Quotes quotes={quotes} onDelete={deleteQuote} onEdit={editQuote}/>} />
+            <Route path="/add-quote" element={<AddQuote loadToggle={toggleIsLoaded} editId={editId} />} />
+            <Route path="/quotes/:id/edit" element={<AddQuote loadToggle={toggleIsLoaded} editId={editId} />} />
           </Routes>
         </Container>
       </main>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
