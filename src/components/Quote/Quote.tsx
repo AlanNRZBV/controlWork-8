@@ -2,7 +2,14 @@ import { FC } from "react";
 import { IQuote } from "../../types";
 import { Link } from "react-router-dom";
 
-const Quote: FC<IQuote> = ({author,text}) => {
+const Quote: FC<IQuote> = ({author,text,onDelete,id}) => {
+
+  const deleteHandler=()=>{
+    if (id){
+    onDelete(id)
+    }
+  }
+
   return (
     <div className="mb-3 border border-1 rounded-3 py-3 px-3 d-flex">
       <div className="d-flex flex-column me-auto">
@@ -11,7 +18,7 @@ const Quote: FC<IQuote> = ({author,text}) => {
       </div>
       <div className="d-flex align-items-start">
         <Link to={'/'} className="btn btn-outline-warning me-3">Edit</Link>
-        <button className="btn btn-outline-danger" type="button">Delete</button>
+        <button onClick={deleteHandler} className="btn btn-outline-danger" type="button">Delete</button>
       </div>
     </div>
   );

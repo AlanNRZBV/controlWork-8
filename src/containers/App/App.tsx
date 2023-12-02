@@ -1,5 +1,5 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
-import { Route, Routes, NavLink } from "react-router-dom";
+import { Route, Routes, NavLink, useNavigate } from "react-router-dom";
 import Quotes from "../Quotes/Quotes.tsx";
 import AddQuote from "../AddQuote/AddQuote.tsx";
 import { useEffect, useState } from "react";
@@ -10,10 +10,11 @@ function App() {
 
   const [quotes,setQuotes]=useState<IQuote[]>([])
   const [isLoaded, setIsLoaded] = useState(false);
+  const navigate = useNavigate()
 
 
   useEffect(() => {
-    if(isLoaded){
+    if(!isLoaded){
       axiosApi.get('/quotes.json').then((response) => {
         if (response.data !== null) {
           const newQuotes = Object.keys(response.data).map((id) => ({ id, ...response.data[id] }));
@@ -23,6 +24,26 @@ function App() {
     }
     setIsLoaded(true);
   }, [isLoaded]);
+
+  const toggleIsLoaded = () => {
+    if (isLoaded) {
+      setIsLoaded((prevState) => !prevState);
+    }
+  };
+
+  const deleteQuote = async (key: string)=>{
+    const id = `/quotes/${key}.json`;
+    try {
+      await axiosApi.delete(id);
+      setQuotes((prevState) => {
+        const newQuotes = [...prevState];
+        return newQuotes.filter((post) => post.id !== key);
+      });
+      navigate('/');
+    } catch (error) {
+      console.log(`Deleting quote with id:${id} cause and error:${error}`);
+    }
+  }
 
 
   return (
@@ -48,9 +69,9 @@ function App() {
       <main>
         <Container>
           <Routes>
-            <Route path="/" element={<Quotes quotes={quotes}/>}/>
-            <Route path="/quotes" element={<Quotes quotes={quotes}/>}/>
-            <Route path="/add-quote" element={<AddQuote/>}/>
+            <Route path="/" element={<Quotes quotes={quotes} onDelete={deleteQuote}/>}/>
+            <Route path="/quotes" element={<Quotes quotes={quotes} onDelete={deleteQuote}/>}/>
+            <Route path="/add-quote" element={<AddQuote loadToggle={toggleIsLoaded}/>}/>
           </Routes>
         </Container>
       </main>

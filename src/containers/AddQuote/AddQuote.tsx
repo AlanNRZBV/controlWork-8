@@ -1,9 +1,9 @@
-import React, { useCallback, useState } from 'react';
-import { IOptions, IQuote } from '../../types';
+import React, { FC, useCallback, useState } from "react";
+import { IAddQuote, IOptions, IQuote } from "../../types";
 import axiosApi from '../../axiosApi.ts';
 import { useNavigate } from 'react-router-dom';
 import QuoteForm from "../../components/QuoteForm/QuoteForm.tsx";
-const AddQuote = () => {
+const AddQuote: FC<IAddQuote> = ({loadToggle}) => {
   const [inputData, setInputData] = useState<IQuote>({
     category: '',
     author: '',
@@ -34,6 +34,7 @@ const AddQuote = () => {
 
     try {
       await axiosApi.post('/quotes.json', inputData);
+      loadToggle()
     } catch (error) {
       console.log('Caught while sending data to server: ' + error);
     }

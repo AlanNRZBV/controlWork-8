@@ -5,10 +5,16 @@ export interface IQuote {
   category?: string,
   author: string,
   text: string
+  onDelete?: (key: string)=>void
 }
 
 export interface IQuotes {
   quotes: IQuote[]
+  onDelete: (key:string)=>void
+}
+
+export interface IAddQuote {
+  loadToggle: ()=>void
 }
 
 export interface IOptions {
